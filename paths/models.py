@@ -1,20 +1,21 @@
 from django.db import models
 
-class Point(models.Model):
-	attribution = models.CharField(max_length=255)
-	title = models.CharField(max_length=65)
+class PointOfInterest(models.Model):
 	lat = models.FloatField()
 	lon = models.FloatField()
+	title = models.CharField(max_length=65)
+	#location = models.FloatField()
 	imageURL = models.URLField(verify_exists=True)
 	line2 = models.CharField(max_length=40)
 	line3 = models.CharField(max_length=40, blank=True, null=True)
 	line4 = models.CharField(max_length=40, blank=True, null=True)
-	type_s = models.IntegerField(max_length=11, blank=True, null=True)
+	type = models.IntegerField(max_length=11, blank=True, null=True)
+	attribution = models.CharField(max_length=255)
 	dimension = models.IntegerField(max_length=1, blank=True, null=True)
 	alt = models.IntegerField(max_length=10, blank=True, null=True)
 	relativeAlt = models.IntegerField(max_length=10, blank=True, null=True)
 	actions = models.CharField(max_length=30, blank=True, null=True)
-	distance = models.FloatField()
+	#distance = models.CharField(max_length=40)
 	inFocus = models.IntegerField(max_length=1, default=0)
 	doNotIndex = models.IntegerField(max_length=1, default=0)
 	showSmallBiW = models.IntegerField(max_length=1, default=1)
@@ -28,7 +29,7 @@ class Action(models.Model):
         ('GET', 'GET'),
         ('POST', 'POST'),
 	)
-	point = models.ForeignKey(Point)		
+	pointofi = models.ForeignKey(PointOfInterest)		
 	label = models.CharField(max_length=255)
 	url = models.CharField(max_length=255)
 	autoTriggerRange = models.IntegerField(max_length=10, blank=True, null=True)

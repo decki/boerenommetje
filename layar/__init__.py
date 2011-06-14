@@ -11,49 +11,6 @@ class LayarException(Exception):
         self.message = message
 
 class POI(object):
-    '''
-        Object representing Layar Points of Interest
-
-        Layar has some specific requirements (eg. that lat/longs are converted
-        to fixed point) that are taken care of when converting these objects
-        to JSON.  String lengths mentioned below are recommended, strings will
-        not be truncated on the server.
-
-        Required fields:
-            ``id``
-                unique id for this POI
-            ``lat``
-                latitude of POI
-            ``lon``
-                longitude of POI
-            ``title``
-                Name of POI, displayed in large font. (<= 60 chars)
-
-        Optional fields:
-            ``imageURL``
-                image to display when POI is selected
-            ``line2, line3, line4``
-                additional lines of detail (use special token %distance% to
-                display distance to POI) (<= 35 chars)
-            ``type``
-                numerical type, can set meaning when publishing Layar
-            ``attribution``
-                bottom line of display, shown in small font (<= 45 chars)
-            ``dimension``
-                changes how POI is displayed (defaults to 1)
-                    1 - point marker (default)
-                    2 - image used for POI
-                    3 - 3d object used for POI
-            ``alt``
-                Real altitude of object in meters.
-            ``relative_alt``
-                Relative altitude (in meters) of object with respect to user.
-            ``actions``
-                list of dictionaries with ``label`` and ``uri`` keys
-                as of Layar v3 the dictionaries may optionally include
-                ``autoTriggerOnly`` and ``autoTriggerOnly``
-        '''
-
     def __init__(self, id, lat, lon, title, actions=None, image_url=None,
                  line2=None, line3=None, line4=None, type=0, attribution=None,
                  dimension=1, alt=None, transform=None, object_detail=None,
@@ -102,44 +59,13 @@ class POI(object):
         return d
 
 class LayarView(object):
-    '''
-        Class-based generic view for creating a Layar endpoint.
-
-        To add a layar it is necessary to write two functions:
-            ``get_LAYERNAME_queryset``
-                This function is passed latitude, longitude, radius,
-                radio_option, search_query, and slider_value parameters.
-
-                radio_option, search_query, and slider_value may be None
-                depending on how you've configured your widgets on layar.com
-
-                **Note:** It is strongly recommended that you make this function
-                accept **kwargs for maximum compatibility
-
-            ``poi_from_LAYERNAME_item(item)``
-                convert an item of whatever type is returned by 
-                :func:`get_LAYARNAME_queryset` into a ``POI`` object
-
-        This separation allows LayarView to handle pagination correctly.
-
-        Your derived class can also set a number of options.  The defaults
-        should be suitable for most purposes as Layar doesn't display more
-        than 50 points.
-
-        ``results_per_page``
-            controls the number of results returned at once (default: 15)
-        ``max_results``
-            controls the maximum number of results across all pages (default: 50)
-        ``verify_hash``
-            set to False to disable hash verification (useful for testing)
-        ``default_radius``
-            radius to use if a radius is not passed
-    '''
-
     results_per_page = 15
     max_results = 50
     default_radius = 1000
     verify_hash = False
+
+    #def __init__(self):
+    #    self.developer_key = settings.LAYAR_DEVELOPER_KEY
 
     def __call__(self, request):
         try:
