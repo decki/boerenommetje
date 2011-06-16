@@ -1,24 +1,11 @@
 # Create your views here.
 
 from django.contrib.gis.geos import Point
-from paths.models import PointOfInterest
+from paths.models import PointOfInterest, Action
 from layar import LayarView, POI
 from math import *
 from django.conf import settings 
 from django.db import connection, transaction, models
-
-
-
-'''
-(((acos(sin((:lat1 * pi() / 180)) * sin((lat * pi() / 180)) +
-                  	   cos((:lat2 * pi() / 180)) * cos((lat * pi() / 180)) * 
-                       cos((:long  - lon) * pi() / 180))
-                      ) * 180 / pi()) * 60 * 1.1515 * 1.609344 * 1000) as distance
-    		FROM POI_Table
-    		HAVING distance < :radius
-    		ORDER BY distance ASC
-    		LIMIT 0, 50 " );
-'''
 
 class BoerenommetjeLayar(LayarView):
     
@@ -28,6 +15,8 @@ class BoerenommetjeLayar(LayarView):
 #                       cos((:longitude  - longitude) * math.pi / 180))
 #                      ) * 180 / math.pi) * 60 * 1.1515 * 1.609344 * 1000)
 #        return PointOfInterest.objects.filter()#haversine(self.lat, self.lon, self.radius))
+#        return PointOfInterest.objects.filter(location__distance_lt=(Point(longitude, latitude), radius)) ###
+
         cursor = connection.cursor()
         sql = """SELECT id, lat, lon FROM paths_pointofinterest WHERE
                  (6371 * acos (cos( radians(%f) ) * cos( radians( lat ) ) *
@@ -39,6 +28,15 @@ class BoerenommetjeLayar(LayarView):
 
     def poi_from_boerenommetje_item(self, item):
         return POI(id=item.id, lat=item.lat, lon=item.lon, title=item.title, line2=item.line2, line3='Distance: %distance%')
+
+    def get_action(Action, self):
+        cursor = connection.cursor()
+        poi_selected = get_boerenommetje_queryset(self, latitude, longitude, radius)
+        action = """SELECT label, url, autoTriggerRange, autoTriggerOnly, contentType,
+                    method, activityType, params, closeBiw, showActivity, activityMessage
+                    FROM paths_action WHERE pointofi_id = """
+        
+        return PointOfInterest.actions()        
 
 # create an instance of BoerenommetjeLayar
 boerenommetje_layar = BoerenommetjeLayar()
