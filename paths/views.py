@@ -28,6 +28,15 @@ class BoerenommetjeLayar(LayarView):
 
 	def poi_from_boerenommetje_item(self, item):
 		return POI(id=item.id, lat=item.lat, lon=item.lon, title=item.title, line2=item.line2, line3='Distance: %distance%')
+		
+			def get_boerenommetje_queryset(self, latitude, longitude, radius, **kwargs):
+		def haversine(self, latitude, longitude, lat=item.lat, lon=item.lon):
+			d_lat = latitude - lat
+			d_lon = longitude - lon
+			a = math.sin(d_lat/2)**2 + math.cos(lat) * math.cos(latitude) * math.sin(d_lon/2)**2
+			c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+			return 6373 * c
+		return PointOfInterest.objects.filter(haversine(latitude, longitude, lat=item.lat, lon=item.lon))
 
 	def get_action(Action, self):
 		cursor = connection.cursor()
